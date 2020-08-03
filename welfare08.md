@@ -272,6 +272,41 @@ ageg_religion_marriage
 
 #### `count()` 활용
 
+``` r
+ageg_religion_marriage <- welfare %>% 
+  filter(!is.na(group_marriage) & ageg !="young") %>% 
+  count(ageg,religion,group_marriage) %>% 
+  group_by(ageg,religion) %>% 
+  mutate(pct=round(n/sum(n)*100,1))
+```
+
 #### 연령대 및 종교 유무별 이혼율 표 만들기
 
+``` r
+df_divorce <- ageg_religion_marriage %>% 
+  filter(group_marriage=="divorce") %>% 
+  select(ageg,religion,pct)
+
+df_divorce
+```
+
+    ## # A tibble: 4 x 3
+    ## # Groups:   ageg, religion [4]
+    ##   ageg   religion   pct
+    ##   <chr>  <chr>    <dbl>
+    ## 1 middle no         9.7
+    ## 2 middle yes        7.9
+    ## 3 old    no         6.5
+    ## 4 old    yes        6.6
+
 #### 4\. 연령대 및 종교 유무에 따른 이혼율 그래프 만들기
+
+``` r
+ggplot(data=df_divorce,aes(x=ageg,y=pct,fill=religion))+
+  geom_col(position="dodge")
+```
+
+![](welfare08_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+표와 그래프를 통해 노년은 종교 유무에 따른 이혼율 차이가 0.1%로 작고, 오히려 종교가 있는 사람들의 이혼율이 약간 더 높다는
+것을 알 수 있다. 반면, 중년은 종교가 없는 사람들의 이혼율이 1.8% 더 높다는 것을 알 수 있다.
